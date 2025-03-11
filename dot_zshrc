@@ -1,0 +1,90 @@
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+
+# Config setup w/ help from Dreams of Autonomy
+# https://www.youtube.com/watch?v=ud7YxC33Z3w&t=506s
+
+
+# zinit setup
+# Set the directory to store zinit and plugins
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+
+# Download Zinit, if it's not there yet
+if [ ! -d "$ZINIT_HOME" ]; then
+  mkdir -p "$(dirname $ZINIT_HOME)"
+  git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
+
+# Source/Load zinit
+source "${ZINIT_HOME}/zinit.zsh"
+
+# Add in zsh plugins
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-autosuggestions
+zinit light Aloxaf/fzf-tab
+
+# Look into zoxide? -> better cd
+# https://www.youtube.com/watch?v=aghxkpyRVDY
+
+# Add snippets (can get other plugins!)
+# zinit snippet OMZP::git #OMZP points to OhMyZsh url + path to plugin
+
+# Load completions
+autoload -U compinit && compinit
+zinit cdreplay -q # Used by zinit to replay cached completions
+
+
+# Command History
+HISTSIZE=5000
+HISTFILE=~/.zsh_history
+SAVEHIST=$HISTSIZE
+HISTDUP=erase
+setopt appendhistory
+setopt sharehistory
+setopt hist_ignore_space
+setopt hist_ignore_all_dups
+setopt hist_save_no_dups
+setopt hist_ignore_dups
+setopt hist_find_no_dups
+
+
+# Completion styling
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' # Matches lowercase to uppercase AND lowercase
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}" # Gives colors for autocompletion
+zstyle ':completion:*' menu no # Disables default zsh completion
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath' # Folder preview
+
+
+# Aliases
+# Look into adding alias file? (.zsh_aliases OR google it)
+# OR split .zshrc as a whole?
+alias ls='ls --color'
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+
+# Shell integrations
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" # load brew apps
+eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/myFirstConf.toml)" # omp theming; can put links w/ config flag
+eval "$(fzf --zsh)" #<C-r> => fzf reverse search; <C-p>/<C-n>
+
+
+# Keybindings
+# bindkey -e # emacs mode !
+# bindkey '^p' history-search-backward # <C-p>
+# bindkey '^n' history-search-forward # <C-n>
+
+
+# Exports
+# NVM = node version manager
+# if stuff breaks, re-enable !
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # Loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # Loads nvm bash_completion
+
+export EDITOR="nvim"
+export VISUAL="nvim"
+export PATH=/home/komatosekoala/.nvm/versions/node/v22.14.0/bin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/snap/bin:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0:
